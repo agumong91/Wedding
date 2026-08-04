@@ -161,7 +161,7 @@ autoDetect("story").then(urls => {
 })();
 
 // 갤러리 + 라이트박스
-let galleryUrls = [], lbIndex = 0;
+let galleryUrls = [], lbList = [], lbIndex = 0;
 autoDetect("gallery").then(urls => {
   galleryUrls = urls;
   const g = $("#gallery");
@@ -169,19 +169,19 @@ autoDetect("gallery").then(urls => {
     const cell = document.createElement("div"); cell.className="cell";
     const img = document.createElement("img"); img.src=u; img.alt="갤러리 사진"; img.loading="lazy";
     cell.appendChild(img);
-    cell.addEventListener("click", ()=> openLightbox(idx));
+    cell.addEventListener("click", ()=> openLightbox(galleryUrls, idx));
     g.appendChild(cell);
   });
 });
-function openLightbox(i){
-  if(!galleryUrls.length) return;
-  lbIndex = i; $("#lbImg").src = galleryUrls[i];
-  $("#lbCount").textContent = `${i+1} / ${galleryUrls.length}`;
+function openLightbox(list, i){
+  if(!list || !list.length) return;
+  lbList = list; lbIndex = i; $("#lbImg").src = list[i];
+  $("#lbCount").textContent = list.length > 1 ? `${i+1} / ${list.length}` : "";
   $("#lightbox").classList.add("open");
 }
 $("#lbClose").onclick = ()=> $("#lightbox").classList.remove("open");
-$("#lbPrev").onclick = ()=> openLightbox((lbIndex - 1 + galleryUrls.length) % galleryUrls.length);
-$("#lbNext").onclick = ()=> openLightbox((lbIndex + 1) % galleryUrls.length);
+$("#lbPrev").onclick = ()=> openLightbox(lbList, (lbIndex - 1 + lbList.length) % lbList.length);
+$("#lbNext").onclick = ()=> openLightbox(lbList, (lbIndex + 1) % lbList.length);
 
 // 오시는 길
 $("#locVenue").textContent = W.venue;
@@ -189,7 +189,11 @@ $("#locHall").textContent = W.hall;
 $("#locAddr").innerHTML = `${W.address}<br>${dateKo} ${timeStr}`;
 $("#locTel").innerHTML = W.tel ? `Tel. <a href="tel:${W.tel}">${W.tel}</a>` : "";
 tryLoad("images/location/1").then(u => {
-  if(u){ $("#mapImg").innerHTML = `<img src="${u}" alt="약도">`; }
+  if(u){
+    $("#mapImg").innerHTML = `<img src="${u}" alt="약도">`;
+    $("#mapImg").style.cursor = "zoom-in";
+    $("#mapImg").addEventListener("click", ()=> openLightbox([u], 0));
+  }
 });
 $("#mapBtns").innerHTML =
   (W.mapLinks.kakao ? `<a href="${W.mapLinks.kakao}" target="_blank" rel="noopener">카카오맵</a>` : "") +
