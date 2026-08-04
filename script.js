@@ -327,3 +327,38 @@ $("#shareBtn").addEventListener("click", async ()=>{
   window.addEventListener("resize", resize);
   init(); draw();
 })();
+
+/* ── 배경 음악 ── */
+(function initMusic(){
+  const M = CONFIG.music;
+  const audio = $("#bgm");
+  const btn = $("#musicToggle");
+  if(!M || !M.enabled || !M.src){ btn && btn.remove(); return; }
+
+  audio.src = M.src;
+  audio.volume = 0.6;
+  let playing = false;
+
+  function render(){
+    btn.classList.toggle("playing", playing);
+    btn.classList.toggle("paused", !playing);
+    btn.title = playing ? "음악 끄기" : "음악 켜기";
+  }
+  function play(){ audio.play().then(()=>{ playing = true; render(); }).catch(()=>{ playing = false; render(); }); }
+  function pause(){ audio.pause(); playing = false; render(); }
+
+  btn.classList.add("show");
+  render();
+  btn.addEventListener("click", ()=> playing ? pause() : play());
+
+  if(M.autoplay){
+    const openBtn = $("#openBtn");
+    if(openBtn && CONFIG.useCurtain){
+      openBtn.addEventListener("click", play);
+    } else {
+      const startOnce = ()=>{ play(); document.removeEventListener("click", startOnce); document.removeEventListener("touchstart", startOnce); };
+      document.addEventListener("click", startOnce);
+      document.addEventListener("touchstart", startOnce);
+    }
+  }
+})();
