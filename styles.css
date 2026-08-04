@@ -41,7 +41,7 @@ body{
 .music-toggle{
   position:fixed; top:16px; right:16px; z-index:70;
   width:44px; height:44px; border-radius:50%;
-  background:rgba(30,24,32,.55); color:#f5f2ee;
+  background:rgba(30,24,32,.55); color:var(--frost);
   border:1px solid rgba(177,138,92,.5);
   font-size:17px; cursor:pointer; backdrop-filter:blur(4px);
   display:none; align-items:center; justify-content:center;
@@ -50,7 +50,9 @@ body{
 .music-toggle.show{display:flex;}
 .music-toggle.playing{animation:spin 6s linear infinite;}
 .music-toggle.paused{opacity:.5;}
+.music-toggle.hidden{display:none;}
 @keyframes spin{to{transform:rotate(360deg);}}
+@media (prefers-reduced-motion: reduce){ .music-toggle.playing{animation:none;} }
 
 /* ── 공통 섹션 ── */
 section{padding:64px 30px; position:relative;}
@@ -170,12 +172,26 @@ td.today span{
 .gallery .cell:active img{transform:scale(1.05);}
 
 /* 라이트박스 */
-#lightbox{position:fixed; inset:0; z-index:60; background:rgba(15,12,18,.95); display:none; align-items:center; justify-content:center; flex-direction:column;}
+#lightbox{position:fixed; inset:0; z-index:90; background:rgba(15,12,18,.95); display:none; align-items:center; justify-content:center; flex-direction:column;}
 #lightbox.open{display:flex;}
 #lightbox img{max-width:92%; max-height:78%; object-fit:contain; border-radius:3px;}
-.lb-nav{position:absolute; top:0; bottom:0; width:40%; }
-.lb-prev{left:0;} .lb-next{right:0;}
-.lb-close{position:absolute; top:20px; right:24px; color:#fff; font-size:26px; cursor:pointer; z-index:2;}
+.lb-nav{position:absolute; top:0; bottom:0; width:38%; display:flex; align-items:center; cursor:pointer; z-index:2;}
+.lb-prev{left:0; justify-content:flex-start; padding-left:14px;}
+.lb-next{right:0; justify-content:flex-end; padding-right:14px;}
+.lb-nav::after{
+  width:46px; height:46px; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:30px; line-height:1; font-family:var(--serif-en);
+  background:rgba(0,0,0,.32); border:1px solid rgba(255,255,255,.35); border-radius:50%;
+}
+.lb-prev::after{content:"\2039";}   /* ‹ */
+.lb-next::after{content:"\203A";}   /* › */
+#lightbox.single .lb-nav{display:none;}
+.lb-close{
+  position:absolute; top:18px; right:18px; z-index:3;
+  width:44px; height:44px; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:22px; cursor:pointer;
+  background:rgba(0,0,0,.32); border:1px solid rgba(255,255,255,.35); border-radius:50%;
+}
 .lb-count{color:var(--muted); margin-top:18px; font-family:var(--serif-en); letter-spacing:.2em; font-size:13px;}
 
 /* ── 오시는 길 ── */
