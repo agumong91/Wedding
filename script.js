@@ -177,9 +177,15 @@ function openLightbox(list, i){
   if(!list || !list.length) return;
   lbList = list; lbIndex = i; $("#lbImg").src = list[i];
   $("#lbCount").textContent = list.length > 1 ? `${i+1} / ${list.length}` : "";
-  $("#lightbox").classList.add("open");
+  const box = $("#lightbox");
+  box.classList.toggle("single", list.length <= 1);  // 사진 1장이면 화살표 숨김
+  box.classList.add("open");
+  $("#musicToggle")?.classList.add("hidden");         // 음악 버튼 잠시 숨김 (X와 겹침 방지)
 }
-$("#lbClose").onclick = ()=> $("#lightbox").classList.remove("open");
+$("#lbClose").onclick = ()=>{
+  $("#lightbox").classList.remove("open");
+  $("#musicToggle")?.classList.remove("hidden");      // 닫으면 음악 버튼 다시 표시
+};
 $("#lbPrev").onclick = ()=> openLightbox(lbList, (lbIndex - 1 + lbList.length) % lbList.length);
 $("#lbNext").onclick = ()=> openLightbox(lbList, (lbIndex + 1) % lbList.length);
 
