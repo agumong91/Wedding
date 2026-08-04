@@ -37,6 +37,21 @@ body{
 /* ── 눈 캔버스 ── */
 #snow{position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:1;}
 
+/* ── 배경 음악 토글 버튼 ── */
+.music-toggle{
+  position:fixed; top:16px; right:16px; z-index:70;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(30,24,32,.55); color:#f5f2ee;
+  border:1px solid rgba(177,138,92,.5);
+  font-size:17px; cursor:pointer; backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center;
+  transition:opacity .3s, background .3s;
+}
+.music-toggle.show{display:flex;}
+.music-toggle.playing{animation:spin 6s linear infinite;}
+.music-toggle.paused{opacity:.5;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
 /* ── 공통 섹션 ── */
 section{padding:64px 30px; position:relative;}
 .eyebrow{
