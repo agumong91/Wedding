@@ -238,7 +238,7 @@ document.addEventListener("click", e => {
   $("#videoCaption").textContent = CONFIG.video.caption || "";
   $("#videoThumb").src = `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
   $("#videoFrame").addEventListener("click", function once(){
-     document.dispatchEvent(new Event("bgm:pause"));   // 영상 재생 시 배경음악 정지
+    document.dispatchEvent(new Event("bgm:pause"));   // 영상 재생 시 배경음악 정지
     this.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0"
       title="wedding video"
       referrerpolicy="strict-origin-when-cross-origin"
@@ -333,7 +333,9 @@ $("#shareBtn").addEventListener("click", async ()=>{
   init(); draw();
 })();
 
-/* ── 배경 음악 ── */
+/* ============================================================
+   배경 음악
+============================================================ */
 (function initMusic(){
   const M = CONFIG.music;
   const audio = $("#bgm");
@@ -349,19 +351,25 @@ $("#shareBtn").addEventListener("click", async ()=>{
     btn.classList.toggle("paused", !playing);
     btn.title = playing ? "음악 끄기" : "음악 켜기";
   }
-  function play(){ audio.play().then(()=>{ playing = true; render(); }).catch(()=>{ playing = false; render(); }); }
+  function play(){
+    audio.play().then(()=>{ playing = true; render(); }).catch(()=>{ playing = false; render(); });
+  }
   function pause(){ audio.pause(); playing = false; render(); }
 
   btn.classList.add("show");
   render();
   btn.addEventListener("click", ()=> playing ? pause() : play());
-   document.addEventListener("bgm:pause", pause);
+
+  // 영상 재생 등 외부에서 정지 신호가 오면 음악을 멈춤
+  document.addEventListener("bgm:pause", pause);
 
   if(M.autoplay){
     const openBtn = $("#openBtn");
     if(openBtn && CONFIG.useCurtain){
+      // "초대장 열기" 클릭 = 사용자 동작 → 이때 재생하면 자동재생 차단을 피할 수 있음
       openBtn.addEventListener("click", play);
     } else {
+      // 커튼 미사용 시: 화면을 처음 누를 때 시작
       const startOnce = ()=>{ play(); document.removeEventListener("click", startOnce); document.removeEventListener("touchstart", startOnce); };
       document.addEventListener("click", startOnce);
       document.addEventListener("touchstart", startOnce);
