@@ -18,9 +18,16 @@ const CONFIG = {
   // ── 눈 내리는 연출 ──
   snow: {
     enabled: true,    // 눈 애니메이션 사용 여부
-    density: 90       // 눈송이 개수 (많을수록 촘촘, 40~140 권장)
+    density: 50       // 눈송이 개수 (많을수록 촘촘, 40~140 권장)
   },
-
+  
+// ── 배경 음악 ──
+  music: {
+    enabled: true,       // 음악 사용 여부
+    src: "bgm.mp3",      // 1단계에서 올린 음악 파일 이름과 똑같이
+    autoplay: true       // 초대장 열 때 자동 재생
+  },
+  
   // ── 메인 (히어로) ──
   groom: {
     name: "이지원",
