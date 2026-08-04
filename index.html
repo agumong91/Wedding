@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<title>모바일 청첩장</title>
+
+<!-- 폰트: 한글 명조/고운돋움 + 영문 Marcellus -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Dodum&family=Marcellus&display=swap" rel="stylesheet" />
+
+<!-- 스타일시트 -->
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- 눈 캔버스 -->
+  <canvas id="snow"></canvas>
+
+  <!-- 초대장 열기(커튼) -->
+  <div id="curtain">
+    <div class="curtain-en">The Wedding of</div>
+    <div class="curtain-names" id="curtainNames">신랑 · 신부</div>
+    <div class="curtain-sub" id="curtainSub">2026. 11. 14 SAT</div>
+    <button class="curtain-btn" id="openBtn">OPEN INVITATION</button>
+  </div>
+
+  <div class="frame" id="frame">
+
+    <!-- 히어로 -->
+    <section class="hero">
+      <div class="hero-photo" id="heroPhoto">
+        <div class="ph-flake">❄</div>
+        <div class="hero-overlay">
+          <div class="hero-en" id="heroEn">GROOM &amp; BRIDE</div>
+          <div class="hero-names" id="heroNames">신랑 · 신부</div>
+        </div>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-date" id="heroDate"></div>
+        <div class="hero-place" id="heroPlace"></div>
+      </div>
+    </section>
+
+    <!-- 인사말 -->
+    <section class="reveal">
+      <div class="eyebrow">Invitation</div>
+      <h2 class="s-title" id="greetTitle"></h2>
+      <div class="divider"></div>
+      <p class="greet-body pre-line" id="greetBody" style="margin-top:26px;"></p>
+      <div class="parents" id="parents"></div>
+    </section>
+
+    <!-- 우리의 이야기 -->
+    <section class="reveal">
+      <div class="eyebrow">Our Story</div>
+      <h2 class="s-title" id="storyTitle"></h2>
+      <div class="divider"></div>
+      <p class="story-body pre-line" id="storyBody" style="margin-top:26px;"></p>
+      <div class="story-imgs" id="storyImgs"></div>
+    </section>
+
+    <!-- 캘린더 / 카운트다운 -->
+    <section class="reveal">
+      <div class="eyebrow">The Date</div>
+      <h2 class="s-title">예식 안내</h2>
+      <div class="divider"></div>
+      <div class="cal-wrap" style="margin-top:26px;">
+        <div class="panel cal">
+          <div class="cal-head" id="calHead"></div>
+          <table class="calendar" id="calTable"></table>
+        </div>
+        <div class="countdown" id="countdown"></div>
+        <div class="cd-line" id="cdLine"></div>
+      </div>
+    </section>
+
+    <!-- 갤러리 -->
+    <section class="reveal">
+      <div class="eyebrow">Gallery</div>
+      <h2 class="s-title">사진첩</h2>
+      <div class="divider"></div>
+      <div class="gallery" id="gallery" style="margin-top:26px;"></div>
+    </section>
+
+    <!-- 오시는 길 -->
+    <section class="reveal">
+      <div class="eyebrow">Location</div>
+      <h2 class="s-title">오시는 길</h2>
+      <div class="divider"></div>
+      <div class="panel loc-card" style="margin-top:26px;">
+        <div class="loc-venue" id="locVenue"></div>
+        <div class="loc-hall" id="locHall"></div>
+        <div class="loc-addr" id="locAddr"></div>
+        <div class="loc-tel" id="locTel"></div>
+        <div class="map-img" id="mapImg"><span class="ph">약도 이미지 (images/location/1.jpg)</span></div>
+        <div class="map-btns" id="mapBtns"></div>
+      </div>
+    </section>
+
+    <!-- 마음 전하실 곳 -->
+    <section class="reveal">
+      <div class="eyebrow">With Heart</div>
+      <h2 class="s-title">마음 전하실 곳</h2>
+      <div class="divider"></div>
+      <p class="acc-desc" style="margin-top:26px;">참석이 어려우신 분들을 위해<br>계좌번호를 안내드립니다.</p>
+      <div id="accGroom" class="acc-group"></div>
+      <div id="accBride" class="acc-group"></div>
+    </section>
+
+    <!-- 영상 (마음 전하실 곳 다음) -->
+    <section class="reveal" id="videoSection" style="display:none;">
+      <div class="eyebrow">Movie</div>
+      <h2 class="s-title" id="videoTitle"></h2>
+      <div class="divider"></div>
+      <p class="video-caption" id="videoCaption" style="margin-top:26px;"></p>
+      <div class="video-frame" id="videoFrame">
+        <img id="videoThumb" alt="영상 썸네일" />
+        <div class="video-play"><span></span></div>
+      </div>
+    </section>
+
+    <!-- 푸터 -->
+    <section class="footer reveal">
+      <button class="share-btn" id="shareBtn">🔗 링크 복사하기</button>
+      <div class="foot-flake">❄</div>
+      <div class="foot-names" id="footNames"></div>
+      <div class="foot-date" id="footDate"></div>
+    </section>
+
+  </div>
+
+  <!-- 라이트박스 -->
+  <div id="lightbox">
+    <div class="lb-close" id="lbClose">✕</div>
+    <div class="lb-nav lb-prev" id="lbPrev"></div>
+    <div class="lb-nav lb-next" id="lbNext"></div>
+    <img id="lbImg" alt="" />
+    <div class="lb-count" id="lbCount"></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- 스크립트: config.js가 script.js보다 먼저 로드되어야 합니다 -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
