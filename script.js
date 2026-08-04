@@ -234,6 +234,7 @@ document.addEventListener("click", e => {
   $("#videoCaption").textContent = CONFIG.video.caption || "";
   $("#videoThumb").src = `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
   $("#videoFrame").addEventListener("click", function once(){
+     document.dispatchEvent(new Event("bgm:pause"));   // 영상 재생 시 배경음악 정지
     this.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0"
       title="wedding video"
       referrerpolicy="strict-origin-when-cross-origin"
@@ -350,6 +351,7 @@ $("#shareBtn").addEventListener("click", async ()=>{
   btn.classList.add("show");
   render();
   btn.addEventListener("click", ()=> playing ? pause() : play());
+   document.addEventListener("bgm:pause", pause);
 
   if(M.autoplay){
     const openBtn = $("#openBtn");
