@@ -329,8 +329,6 @@ $("#shareBtn").addEventListener("click", async ()=>{
       ctx.beginPath();
       ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
       ctx.fillStyle = `rgba(255,255,255,${f.op})`;
-      ctx.shadowColor = "rgba(220,230,240,.6)";
-      ctx.shadowBlur = 4;
       ctx.fill();
     }
     requestAnimationFrame(draw);
