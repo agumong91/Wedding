@@ -26,7 +26,7 @@ function tryLoad(base){
     attempt();
   });
 }
-async function autoDetect(folder, max=30){
+async function autoDetect(folder, max=60){
   const found = [];
   for(let n=1; n<=max; n++){
     const url = await tryLoad(`images/${folder}/${n}`);
@@ -107,8 +107,10 @@ $("#storyTitle").textContent = CONFIG.story.title;
 $("#storyBody").textContent = CONFIG.story.content;
 autoDetect("story").then(urls => {
   const box = $("#storyImgs");
-  urls.forEach(u => {
+  urls.forEach((u, idx) => {
     const div = document.createElement("div"); div.className = "shot";
+    // 사진이 홀수 장이면 마지막 한 장은 좌우 대신 가운데 넓게 배치
+    if(idx === urls.length - 1 && urls.length % 2 === 1) div.classList.add("full");
     const img = document.createElement("img"); img.src = u; img.alt = "스토리 사진"; img.loading="lazy";
     div.appendChild(img); box.appendChild(div);
   });
@@ -160,18 +162,41 @@ autoDetect("story").then(urls => {
   tick(); setInterval(tick, 1000);
 })();
 
-// 갤러리 + 라이트박스
+// 갤러리 (가로 스와이프 슬라이더) + 라이트박스
 let galleryUrls = [], lbList = [], lbIndex = 0;
 autoDetect("gallery").then(urls => {
   galleryUrls = urls;
+  if(!urls.length){ const wrap = $(".gallery-wrap"); if(wrap) wrap.style.display = "none"; return; }
   const g = $("#gallery");
   urls.forEach((u,idx)=>{
     const cell = document.createElement("div"); cell.className="cell";
-    const img = document.createElement("img"); img.src=u; img.alt="갤러리 사진"; img.loading="lazy";
+    const img = document.createElement("img"); img.src=u; img.alt=`갤러리 사진 ${idx+1}`; img.loading="lazy";
     cell.appendChild(img);
     cell.addEventListener("click", ()=> openLightbox(galleryUrls, idx));
     g.appendChild(cell);
   });
+
+  // 스와이프 중 화면 중앙에 걸린 사진 번호를 실시간으로 표시
+  const countEl = $("#galleryCount");
+  const updateCount = () => {
+    const cells = g.querySelectorAll(".cell");
+    if(!cells.length) return;
+    const center = g.scrollLeft + g.clientWidth / 2;
+    let closest = 0, min = Infinity;
+    cells.forEach((c, i) => {
+      const mid = c.offsetLeft + c.offsetWidth / 2;
+      const diff = Math.abs(mid - center);
+      if(diff < min){ min = diff; closest = i; }
+    });
+    countEl.textContent = `${closest + 1} / ${cells.length}`;
+  };
+  updateCount();
+  let ticking = false;
+  g.addEventListener("scroll", () => {
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { updateCount(); ticking = false; });
+  }, { passive:true });
 });
 function openLightbox(list, i){
   if(!list || !list.length) return;
