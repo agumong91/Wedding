@@ -59,15 +59,12 @@ const hh12 = ((hh + 11) % 12) + 1;
 const timeStr = `${ampm} ${hh12}시${mm ? " " + mm + "분" : ""}`;
 const dateKo = `${y}년 ${mo+1}월 ${d}일 ${DAYS_KO[dow]}요일`;
 
-// 메타
+// 메타 (브라우저 탭 제목)
+// 참고: 카카오톡 공유 미리보기(og:title/description/image)는 크롤러가
+// 이 스크립트를 실행하지 않으므로 index.html <head>의 정적 og: 태그가
+// 담당합니다. config.js의 meta 값을 바꾸면 index.html의 og:title /
+// og:description도 함께 맞춰주세요.
 document.title = CONFIG.meta.title;
-(function setMeta(){
-  const add = (p,c) => { const m=document.createElement("meta"); m.setAttribute("property",p); m.content=c; document.head.appendChild(m); };
-  add("og:title", CONFIG.meta.title);
-  add("og:description", CONFIG.meta.description);
-  add("og:type", "website");
-  tryLoad("images/og/1").then(u => { if(u) add("og:image", u); });
-})();
 
 // 커튼
 $("#curtainNames").textContent = `${CONFIG.groom.name} · ${CONFIG.bride.name}`;
@@ -102,16 +99,49 @@ $("#greetBody").textContent = CONFIG.greeting.content;
       의 딸 <span class="child">${b.name}</span></div>`;
 })();
 
-// 스토리
+// 스토리 (신랑 → 신부 → 우리, 함께 순서로 자연스럽게 전개)
 $("#storyTitle").textContent = CONFIG.story.title;
 $("#storyBody").textContent = CONFIG.story.content;
+
+// 신랑/신부 사진을 가로 스와이프 스트립으로 렌더링. 사진이 한 장도 없으면
+// 어색한 빈 챕터가 남지 않도록 해당 챕터 전체를 숨김.
+function renderChapter({ chapterId, titleId, textId, stripId, folder, title, text, altPrefix }){
+  const titleEl = $(titleId), textEl = $(textId);
+  if(titleEl) titleEl.textContent = title || "";
+  if(textEl) textEl.textContent = text || "";
+  autoDetect(folder).then(urls => {
+    const chapter = $(chapterId);
+    if(!urls.length){ if(chapter) chapter.style.display = "none"; return; }
+    const strip = $(stripId);
+    urls.forEach((u, idx) => {
+      const cell = document.createElement("div"); cell.className = "cell";
+      const img = document.createElement("img"); img.src = u; img.alt = `${altPrefix} 사진 ${idx+1}`; img.loading = "lazy";
+      cell.appendChild(img);
+      cell.addEventListener("click", () => openLightbox(urls, idx));
+      strip.appendChild(cell);
+    });
+  });
+}
+renderChapter({
+  chapterId:"#groomChapter", titleId:"#groomChapterTitle", textId:"#groomChapterText", stripId:"#groomStrip",
+  folder:"groom", title: CONFIG.story.groom?.title, text: CONFIG.story.groom?.text, altPrefix:"신랑"
+});
+renderChapter({
+  chapterId:"#brideChapter", titleId:"#brideChapterTitle", textId:"#brideChapterText", stripId:"#brideStrip",
+  folder:"bride", title: CONFIG.story.bride?.title, text: CONFIG.story.bride?.text, altPrefix:"신부"
+});
+
+// 우리, 함께 (커플 사진)
+$("#togetherChapterTitle").textContent = CONFIG.story.together?.title || "";
 autoDetect("story").then(urls => {
+  const chapter = $("#togetherChapter");
+  if(!urls.length){ if(chapter) chapter.style.display = "none"; return; }
   const box = $("#storyImgs");
   urls.forEach((u, idx) => {
     const div = document.createElement("div"); div.className = "shot";
     // 사진이 홀수 장이면 마지막 한 장은 좌우 대신 가운데 넓게 배치
     if(idx === urls.length - 1 && urls.length % 2 === 1) div.classList.add("full");
-    const img = document.createElement("img"); img.src = u; img.alt = "스토리 사진"; img.loading="lazy";
+    const img = document.createElement("img"); img.src = u; img.alt = "커플 사진"; img.loading="lazy";
     div.appendChild(img); box.appendChild(div);
   });
 });
