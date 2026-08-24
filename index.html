@@ -6,6 +6,43 @@
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>모바일 청첩장</title>
 
+<!-- ============================================================
+     카카오톡/문자 등 링크 공유 시 나오는 미리보기(썸네일·제목·설명)
+     ⚠️ 이 태그들은 반드시 여기(정적 HTML)에 있어야 합니다.
+        카카오톡이 링크를 미리 볼 때는 script.js를 실행하지 않고
+        이 페이지의 <head>만 그대로 읽어가기 때문에, JS로 나중에
+        추가하는 방식(og:image 등)은 인식되지 않습니다.
+
+     아래 og:url / og:image는 https://github.com/agumong91/Wedding 저장소를
+     GitHub Pages로 배포했을 때의 기본 주소(https://agumong91.github.io/Wedding/)로
+     맞춰뒀습니다. 실제로 미리보기가 뜨려면 아래 조건이 모두 맞아야 해요.
+
+       1) 저장소가 Public이어야 합니다 (Private면 카카오 크롤러가 접근 불가).
+          단, Public이 어렵다면 Private 상태에서도 GitHub Pages 배포 자체는
+          별개 문제이니 "Settings → Pages"에서 배포 여부만 먼저 확인하세요.
+       2) 저장소 Settings → Pages 에서 Source가 이 코드가 있는 브랜치
+          (보통 main)로 설정되어 "Your site is live at ..." 문구가 떠야 합니다.
+       3) 사이트 주소가 https://agumong91.github.io/Wedding/ 가 아니라면
+          (예: 커스텀 도메인을 쓰는 경우) 아래 og:url / og:image 값을
+          실제 주소로 바꿔주세요.
+       4) 미리보기 이미지는 images/og/1.jpg 파일명 그대로 저장 (jpg 고정,
+          1200x630px 권장 비율로 준비하면 카카오톡/페이스북 등에서
+          잘리지 않고 가장 깔끔하게 보입니다).
+       5) config.js의 meta.title / meta.description을 바꿨다면
+          아래 og:title / og:description도 동일하게 맞춰주세요.
+
+     수정 후에도 카카오는 이전 미리보기를 한동안 캐싱합니다.
+     https://developers.kakao.com/tool/clear/og 에서 이 주소를 넣고
+     캐시를 지우면 새 미리보기가 바로 반영됩니다.
+============================================================ -->
+<meta property="og:title" content="이지원 ♥ 이유정 결혼합니다" />
+<meta property="og:description" content="2026년 11월 14일, 소중한 분들을 초대합니다." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://agumong91.github.io/Wedding/" />
+<meta property="og:image" content="https://agumong91.github.io/Wedding/images/og/1.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
 <!-- 폰트: 한글 명조/고운돋움 + 영문 Marcellus -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,7 +100,29 @@
       <h2 class="s-title" id="storyTitle"></h2>
       <div class="divider"></div>
       <p class="story-body pre-line" id="storyBody" style="margin-top:26px;"></p>
-      <div class="story-imgs" id="storyImgs"></div>
+
+      <!-- 신랑 이야기 (images/groom/ 폴더에 사진이 없으면 자동으로 숨겨집니다) -->
+      <div class="story-chapter align-left" id="groomChapter">
+        <div class="chapter-label">GROOM</div>
+        <h3 class="chapter-title" id="groomChapterTitle"></h3>
+        <p class="chapter-text pre-line" id="groomChapterText"></p>
+        <div class="chapter-strip" id="groomStrip"></div>
+      </div>
+
+      <!-- 신부 이야기 (images/bride/ 폴더에 사진이 없으면 자동으로 숨겨집니다) -->
+      <div class="story-chapter align-right" id="brideChapter">
+        <div class="chapter-label">BRIDE</div>
+        <h3 class="chapter-title" id="brideChapterTitle"></h3>
+        <p class="chapter-text pre-line" id="brideChapterText"></p>
+        <div class="chapter-strip" id="brideStrip"></div>
+      </div>
+
+      <!-- 우리, 함께 (기존 images/story/ 폴더의 커플 사진) -->
+      <div class="story-chapter align-center" id="togetherChapter">
+        <div class="chapter-label">TOGETHER</div>
+        <h3 class="chapter-title" id="togetherChapterTitle"></h3>
+        <div class="story-imgs" id="storyImgs"></div>
+      </div>
     </section>
 
     <!-- 캘린더 / 카운트다운 -->
