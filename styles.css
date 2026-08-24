@@ -101,8 +101,8 @@ section{padding:64px 30px; position:relative;}
 .curtain-sub{color:var(--muted); font-size:13px; margin-top:16px; letter-spacing:.06em;}
 .curtain-btn{
   margin-top:44px; padding:14px 34px; border:1px solid var(--gold);
-  background:transparent; color:var(--frost); font-family:var(--serif-en);
-  letter-spacing:.28em; font-size:12px; cursor:pointer; border-radius:2px;
+  background:transparent; color:var(--frost); font-family:var(--sans-ko);
+  letter-spacing:.14em; font-size:14px; cursor:pointer; border-radius:2px;
   transition:background .3s, color .3s;
 }
 .curtain-btn:hover{background:var(--gold); color:#241c22;}
