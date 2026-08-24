@@ -31,9 +31,11 @@
        5) config.js의 meta.title / meta.description을 바꿨다면
           아래 og:title / og:description도 동일하게 맞춰주세요.
 
-     ⚠️ og:description은 카카오톡 채팅방 미리보기(작은 썸네일 스타일)에서는
-        한 줄에 대략 20자 정도만 표시되고 나머지는 "..."으로 잘립니다.
-        문구를 넣을 땐 두 줄 모두 짧게(각 줄 20자 안팎) 유지해주세요.
+     ⚠️ og:description은 "줄"이 아니라 "전체 글자수" 기준으로 잘립니다.
+        실측 결과 대략 35자를 넘으면 뒷부분이 "..."으로 잘렸습니다.
+        \n으로 줄바꿈을 넣어도 미리보기에서는 그냥 이어서 표시되고
+        전체 글자수 제한은 그대로 적용되니, 문구는 전체 30자 안팎으로
+        짧게 유지해주세요.
 
      ⚠️ 이 og:image 방식은 카카오톡에서 항상 "작은 정사각형 썸네일"로만
         보입니다 (카카오톡 자체 미리보기 UI의 고정된 형태라 크게 만들 수
@@ -45,8 +47,7 @@
      캐시를 지우면 새 미리보기가 바로 반영됩니다.
 ============================================================ -->
 <meta property="og:title" content="지원❤유정 결혼합니다." />
-<meta property="og:description" content="언제든 돌아와 쉴 수 있는 집이 되기로 약속했습니다.
-귀한 걸음으로 오셔서 축복해주세요." />
+<meta property="og:description" content="서로의 쉼터가 된 두 사람의 시작을 축복해 주세요." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://agumong91.github.io/Wedding/" />
 <meta property="og:image" content="https://agumong91.github.io/Wedding/images/og/1.jpg" />
@@ -192,7 +193,7 @@
       <div class="eyebrow">Movie</div>
       <h2 class="s-title" id="videoTitle"></h2>
       <div class="divider"></div>
-      <p class="video-caption" id="videoCaption" style="margin-top:26px;"></p>
+      <p class="video-caption pre-line" id="videoCaption" style="margin-top:26px;"></p>
       <div class="video-frame" id="videoFrame">
         <img id="videoThumb" alt="영상 썸네일" />
         <div class="video-play"><span></span></div>
