@@ -134,12 +134,19 @@ section{padding:64px 30px; position:relative;}
 /* ── 인사말 ── */
 .greet-body{text-align:center; color:var(--frost); font-size:15px; line-height:2.1; letter-spacing:.01em;}
 .parents{
-  margin-top:38px; text-align:center; color:var(--frost);
+  margin-top:38px; color:var(--frost);
   font-size:14.5px; letter-spacing:.02em;
+  display:grid;
+  grid-template-columns:auto auto auto auto;
+  justify-content:center;
+  column-gap:9px; row-gap:9px;
 }
-.parents .row{margin:7px 0;}
-.parents .lbl{color:var(--gold); font-size:12px; margin-right:10px; font-family:var(--serif-en); letter-spacing:.15em;}
-.parents .child{color:var(--gold); font-weight:700;}
+.parents .lbl{
+  color:var(--gold); font-size:12px; font-family:var(--serif-en);
+  letter-spacing:.15em; align-self:baseline; white-space:nowrap;
+}
+.parents .rel{align-self:baseline; white-space:nowrap;}
+.parents .child{color:var(--gold); font-weight:700; align-self:baseline; white-space:nowrap;}
 .deceased::before{content:"故 "; color:var(--muted); font-size:.85em;}
 
 /* ── 스토리 ── */
