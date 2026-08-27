@@ -90,13 +90,19 @@ $("#greetBody").textContent = CONFIG.greeting.content;
 (function renderParents(){
   const g = CONFIG.groom, b = CONFIG.bride;
   const nm = (p, dec) => dec ? `<span class="deceased">${p}</span>` : p;
+  // GROOM/BRIDE 두 줄을 하나의 그리드로 묶어서 렌더링합니다.
+  // (각 줄을 따로 감싸지 않고 8개 span을 나란히 두면, 같은 열끼리
+  //  너비를 공유하는 CSS 그리드가 되어 "이지원"/"이유정"처럼 마지막
+  //  칸의 글자 위치가 위아래 줄에서 정확히 맞춰집니다.)
   $("#parents").innerHTML = `
-    <div class="row"><span class="lbl">GROOM</span>
-      ${nm(g.father, g.fatherDeceased)} · ${nm(g.mother, g.motherDeceased)}
-      의 아들 <span class="child">${g.name}</span></div>
-    <div class="row"><span class="lbl">BRIDE</span>
-      ${nm(b.father, b.fatherDeceased)} · ${nm(b.mother, b.motherDeceased)}
-      의 딸 <span class="child">${b.name}</span></div>`;
+    <span class="lbl">GROOM</span>
+    <span class="names">${nm(g.father, g.fatherDeceased)} · ${nm(g.mother, g.motherDeceased)}</span>
+    <span class="rel">의 아들</span>
+    <span class="child">${g.name}</span>
+    <span class="lbl">BRIDE</span>
+    <span class="names">${nm(b.father, b.fatherDeceased)} · ${nm(b.mother, b.motherDeceased)}</span>
+    <span class="rel">의 딸</span>
+    <span class="child">${b.name}</span>`;
 })();
 
 // 스토리 (신랑 → 신부 → 우리, 함께 순서로 자연스럽게 전개)
@@ -312,13 +318,55 @@ document.addEventListener("click", e => {
 // 푸터
 $("#footNames").textContent = `${CONFIG.groom.name} · ${CONFIG.bride.name}`;
 $("#footDate").textContent = `${y}. ${String(mo+1).padStart(2,"0")}. ${String(d).padStart(2,"0")}`;
-$("#shareBtn").addEventListener("click", async ()=>{
-  const url = location.href;
+
+/* ============================================================
+   카카오톡 공유 (선택 기능)
+   config.js에 kakao.jsKey를 채우고 index.html의 SDK 스크립트를
+   켜두면, 공유 버튼이 og:image의 작은 썸네일 대신 큼직한 이미지
+   카드로 카카오톡 공유를 시도합니다. 둘 중 하나라도 설정 안 돼
+   있으면(=Kakao가 로드/초기화되지 않으면) 기존 방식(네이티브 공유
+   시트 또는 링크 복사)으로 조용히 대체됩니다.
+============================================================ */
+let kakaoReady = false;
+(function initKakao(){
+  const K = CONFIG.kakao;
+  if(!K || !K.enabled || !K.jsKey) return;      // 미설정 시 그대로 종료
+  if(typeof Kakao === "undefined") return;      // SDK 스크립트 태그가 꺼져있거나 로드 실패
   try{
-    if(navigator.share){ await navigator.share({ title: CONFIG.meta.title, text: CONFIG.meta.description, url }); }
-    else { await navigator.clipboard.writeText(url); toast("링크가 복사되었습니다"); }
-  }catch(e){ /* 취소 등 */ }
-});
+    if(!Kakao.isInitialized()) Kakao.init(K.jsKey);
+    kakaoReady = Kakao.isInitialized();
+  }catch(e){ kakaoReady = false; }
+})();
+
+(function renderShareButton(){
+  const btn = $("#shareBtn");
+  if(kakaoReady) btn.textContent = "💬 카카오톡으로 공유하기";
+
+  btn.addEventListener("click", async ()=>{
+    const url = location.href;
+
+    if(kakaoReady){
+      try{
+        const ogImg = document.querySelector('meta[property="og:image"]');
+        Kakao.Share.sendDefault({
+          objectType: "feed",
+          content: {
+            title: CONFIG.meta.title,
+            description: CONFIG.meta.description,
+            imageUrl: ogImg ? ogImg.content : "",
+            link: { mobileWebUrl: url, webUrl: url }
+          }
+        });
+        return;
+      }catch(e){ /* 카카오 공유 실패 시 아래 기본 방식으로 대체 */ }
+    }
+
+    try{
+      if(navigator.share){ await navigator.share({ title: CONFIG.meta.title, text: CONFIG.meta.description, url }); }
+      else { await navigator.clipboard.writeText(url); toast("링크가 복사되었습니다"); }
+    }catch(e){ /* 취소 등 */ }
+  });
+})();
 
 /* ============================================================
    커튼 열기
