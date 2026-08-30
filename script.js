@@ -111,7 +111,7 @@ $("#storyBody").textContent = CONFIG.story.content;
 
 // 신랑/신부 사진을 가로 스와이프 스트립으로 렌더링. 사진이 한 장도 없으면
 // 어색한 빈 챕터가 남지 않도록 해당 챕터 전체를 숨김.
-function renderChapter({ chapterId, titleId, textId, stripId, folder, title, text, altPrefix }){
+function renderChapter({ chapterId, titleId, textId, stripId, countId, folder, title, text, altPrefix }){
   const titleEl = $(titleId), textEl = $(textId);
   if(titleEl) titleEl.textContent = title || "";
   if(textEl) textEl.textContent = text || "";
@@ -119,6 +119,10 @@ function renderChapter({ chapterId, titleId, textId, stripId, folder, title, tex
     const chapter = $(chapterId);
     if(!urls.length){ if(chapter) chapter.style.display = "none"; return; }
     const strip = $(stripId);
+    const countEl = $(countId);
+    const wrap = strip.closest(".strip-wrap");
+    const navBtns = wrap ? wrap.querySelectorAll(".strip-nav") : [];
+
     urls.forEach((u, idx) => {
       const cell = document.createElement("div"); cell.className = "cell";
       const img = document.createElement("img"); img.src = u; img.alt = `${altPrefix} 사진 ${idx+1}`; img.loading = "lazy";
@@ -126,15 +130,45 @@ function renderChapter({ chapterId, titleId, textId, stripId, folder, title, tex
       cell.addEventListener("click", () => openLightbox(urls, idx));
       strip.appendChild(cell);
     });
+
+    // 사진이 한 장뿐이면 넘길 게 없으니 화살표/장수 표시를 숨김
+    if(urls.length <= 1){
+      navBtns.forEach(b => b.hidden = true);
+      return;
+    }
+
+    // getBoundingClientRect로 비교합니다 (offsetLeft는 padding 기준,
+    // scrollLeft는 border 기준이라 좌우 padding이 있는 스와이프 트랙에서는
+    // 서로 좌표계가 어긋나 엉뚱한 장수를 가리키는 문제가 있었습니다).
+    const updateCount = () => {
+      const cells = strip.querySelectorAll(".cell");
+      if(!cells.length) return;
+      const stripRect = strip.getBoundingClientRect();
+      const centerX = stripRect.left + stripRect.width / 2;
+      let closest = 0, min = Infinity;
+      cells.forEach((c, i) => {
+        const r = c.getBoundingClientRect();
+        const diff = Math.abs((r.left + r.width / 2) - centerX);
+        if(diff < min){ min = diff; closest = i; }
+      });
+      if(countEl) countEl.textContent = `${closest + 1} / ${cells.length}`;
+    };
+    updateCount();
+    let ticking = false;
+    strip.addEventListener("scroll", () => {
+      if(ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { updateCount(); ticking = false; });
+    }, { passive:true });
   });
 }
 renderChapter({
   chapterId:"#groomChapter", titleId:"#groomChapterTitle", textId:"#groomChapterText", stripId:"#groomStrip",
-  folder:"groom", title: CONFIG.story.groom?.title, text: CONFIG.story.groom?.text, altPrefix:"신랑"
+  countId:"#groomCount", folder:"groom", title: CONFIG.story.groom?.title, text: CONFIG.story.groom?.text, altPrefix:"신랑"
 });
 renderChapter({
   chapterId:"#brideChapter", titleId:"#brideChapterTitle", textId:"#brideChapterText", stripId:"#brideStrip",
-  folder:"bride", title: CONFIG.story.bride?.title, text: CONFIG.story.bride?.text, altPrefix:"신부"
+  countId:"#brideCount", folder:"bride", title: CONFIG.story.bride?.title, text: CONFIG.story.bride?.text, altPrefix:"신부"
 });
 
 // 우리, 함께 (커플 사진)
@@ -213,15 +247,18 @@ autoDetect("gallery").then(urls => {
   });
 
   // 스와이프 중 화면 중앙에 걸린 사진 번호를 실시간으로 표시
+  // (getBoundingClientRect 기준 비교: offsetLeft/scrollLeft를 섞어 쓰면
+  //  좌우 padding이 있는 트랙에서 좌표계가 어긋날 수 있어 이 방식이 더 정확합니다)
   const countEl = $("#galleryCount");
   const updateCount = () => {
     const cells = g.querySelectorAll(".cell");
     if(!cells.length) return;
-    const center = g.scrollLeft + g.clientWidth / 2;
+    const gRect = g.getBoundingClientRect();
+    const centerX = gRect.left + gRect.width / 2;
     let closest = 0, min = Infinity;
     cells.forEach((c, i) => {
-      const mid = c.offsetLeft + c.offsetWidth / 2;
-      const diff = Math.abs(mid - center);
+      const r = c.getBoundingClientRect();
+      const diff = Math.abs((r.left + r.width / 2) - centerX);
       if(diff < min){ min = diff; closest = i; }
     });
     countEl.textContent = `${closest + 1} / ${cells.length}`;
@@ -294,6 +331,18 @@ document.addEventListener("click", e => {
             $("#"+tg.dataset.target).classList.contains("open") ? "rotate(180deg)" : ""; }
   const cp = e.target.closest(".copy");
   if(cp){ navigator.clipboard?.writeText(cp.dataset.copy).then(()=>toast("계좌번호가 복사되었습니다")); }
+
+  // 신랑/신부 사진 스트립의 ‹ › 화살표: 카드 한 장 폭만큼 스크롤 이동
+  const nav = e.target.closest(".strip-nav");
+  if(nav){
+    const strip = $("#" + nav.dataset.strip);
+    if(strip){
+      const cell = strip.querySelector(".cell");
+      const gap = 10; // .chapter-strip의 gap 값과 동일하게 맞춤
+      const step = cell ? cell.getBoundingClientRect().width + gap : strip.clientWidth * 0.6;
+      strip.scrollBy({ left: nav.classList.contains("strip-prev") ? -step : step, behavior: "smooth" });
+    }
+  }
 });
 
 // 영상
