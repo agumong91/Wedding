@@ -117,7 +117,12 @@
         <div class="chapter-label">GROOM</div>
         <h3 class="chapter-title" id="groomChapterTitle"></h3>
         <p class="chapter-text pre-line" id="groomChapterText"></p>
-        <div class="chapter-strip" id="groomStrip"></div>
+        <div class="strip-wrap">
+          <div class="chapter-strip" id="groomStrip"></div>
+          <button class="strip-nav strip-prev" data-strip="groomStrip" aria-label="이전 사진">‹</button>
+          <button class="strip-nav strip-next" data-strip="groomStrip" aria-label="다음 사진">›</button>
+        </div>
+        <div class="chapter-count" id="groomCount"></div>
       </div>
 
       <!-- 신부 이야기 (images/bride/ 폴더에 사진이 없으면 자동으로 숨겨집니다) -->
@@ -125,7 +130,12 @@
         <div class="chapter-label">BRIDE</div>
         <h3 class="chapter-title" id="brideChapterTitle"></h3>
         <p class="chapter-text pre-line" id="brideChapterText"></p>
-        <div class="chapter-strip" id="brideStrip"></div>
+        <div class="strip-wrap">
+          <div class="chapter-strip" id="brideStrip"></div>
+          <button class="strip-nav strip-prev" data-strip="brideStrip" aria-label="이전 사진">‹</button>
+          <button class="strip-nav strip-next" data-strip="brideStrip" aria-label="다음 사진">›</button>
+        </div>
+        <div class="chapter-count" id="brideCount"></div>
       </div>
 
       <!-- 우리, 함께 (기존 images/story/ 폴더의 커플 사진) -->
