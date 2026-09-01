@@ -163,3 +163,9 @@ const CONFIG = {
     }
   }
 };
+
+// ⚠️ 방명록의 Firebase 연결 스크립트(index.html 하단)는 window.CONFIG로 값을
+// 읽어옵니다. 위에서 const로 선언한 CONFIG는 자동으로 window.CONFIG가 되지
+// 않으므로, 아래 줄로 명시적으로 연결해줍니다. (이 줄을 지우면 방명록이
+// 계속 "로컬 전용" 모드로만 동작하고 공용 방명록으로 업그레이드되지 않습니다)
+window.CONFIG = CONFIG;
