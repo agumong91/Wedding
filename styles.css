@@ -379,6 +379,50 @@ td.today span{
   font-size:13px; letter-spacing:.06em; transition:background .3s, color .3s;
 }
 .share-btn:hover{background:var(--gold); color:#241c22;}
+
+/* ── 방명록 ── */
+.guestbook{margin-top:52px; text-align:center;}
+.guestbook .eyebrow{margin-bottom:8px;}
+.gb-title{
+  font-family:var(--serif-ko); font-weight:700; font-size:18px;
+  color:var(--frost); margin:0 0 22px; letter-spacing:.01em;
+}
+.gb-form{
+  background:rgba(245,242,238,.94); border-radius:6px; padding:20px 18px;
+  box-shadow:0 14px 34px rgba(16,12,20,.3); border:1px solid rgba(255,255,255,.5);
+  text-align:left; display:flex; flex-direction:column; gap:10px;
+}
+.gb-input{
+  width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:4px;
+  padding:12px 14px; font-family:var(--sans-ko); font-size:14px; color:var(--ink);
+  background:#fff;
+}
+.gb-input::placeholder{color:var(--ink-soft);}
+.gb-input:focus{outline:none; border-color:var(--gold);}
+.gb-name{max-width:170px;}
+.gb-message{resize:vertical; min-height:78px; line-height:1.6; font-family:inherit;}
+.gb-submit{
+  align-self:flex-end; margin-top:2px; padding:10px 24px; border:none; border-radius:30px;
+  background:var(--gold); color:#241c22; font-size:13px; letter-spacing:.05em; font-weight:700;
+  cursor:pointer; transition:opacity .2s;
+}
+.gb-submit:active{opacity:.75;}
+.gb-list{margin-top:18px; display:flex; flex-direction:column; gap:10px;}
+.gb-item{
+  background:rgba(245,242,238,.94); border-radius:6px; padding:15px 18px; text-align:left;
+  box-shadow:0 10px 26px rgba(16,12,20,.22); border:1px solid rgba(255,255,255,.5);
+}
+.gb-item-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:6px;}
+.gb-item-name{font-weight:700; color:var(--ink); font-size:14px;}
+.gb-item-date{font-size:11px; color:var(--ink-soft); font-family:var(--serif-en); letter-spacing:.05em; white-space:nowrap;}
+.gb-item-msg{color:var(--ink); font-size:13.5px; line-height:1.7; white-space:pre-line; word-break:break-word;}
+.gb-item-del{
+  margin-top:8px; font-size:11px; color:var(--ink-soft); background:none; border:none;
+  cursor:pointer; padding:0; text-decoration:underline;
+}
+.gb-empty{margin-top:18px; color:var(--muted); font-size:13px;}
+.gb-empty.hide{display:none;}
+
 .foot-flake{color:var(--gold); font-size:20px; margin:30px 0 12px;}
 .foot-names{font-family:var(--serif-ko); font-size:16px; letter-spacing:.1em; color:var(--frost);}
 .foot-date{font-family:var(--serif-en); letter-spacing:.2em; color:var(--muted); font-size:12px; margin-top:8px;}
