@@ -280,8 +280,8 @@ td.today span{
   font-family:var(--serif-en); letter-spacing:.2em; font-size:12px;
 }
 .gallery-hint{
-  text-align:center; margin-top:6px; color:var(--muted);
-  font-size:11.5px; letter-spacing:.03em; opacity:.75;
+  text-align:center; margin-top:8px; color:var(--muted);
+  font-size:11.5px; letter-spacing:.03em; opacity:.75; line-height:1.6;
 }
 
 /* 라이트박스 */
@@ -293,9 +293,11 @@ td.today span{
   transform-origin:center center;
   user-select:none; -webkit-user-drag:none;
 }
-.lb-nav{position:absolute; top:0; bottom:0; width:38%; display:flex; align-items:center; cursor:pointer; z-index:2;}
-.lb-prev{left:0; justify-content:flex-start; padding-left:14px;}
-.lb-next{right:0; justify-content:flex-end; padding-right:14px;}
+/* 화살표 근처만 눌러야 넘어가도록, 탭 가능한 영역을 아이콘 주변으로 좁혀뒀습니다
+   (사진 전체를 누르면 넘어가던 예전 방식은 핀치줌/드래그와 겹쳐 불편했어요) */
+.lb-nav{position:absolute; top:0; bottom:0; width:66px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2;}
+.lb-prev{left:0;}
+.lb-next{right:0;}
 .lb-nav::after{
   width:46px; height:46px; display:flex; align-items:center; justify-content:center;
   color:#fff; font-size:30px; line-height:1; font-family:var(--serif-en);
