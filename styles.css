@@ -363,8 +363,12 @@ td.today span{
 .video-frame{
   /* 영상 원본 비율이 32:9(울트라와이드)라, 카드 비율도 맞춰서 상하 여백(레터박스)
      없이 꽉 차게 보이도록 했습니다. 나중에 다른 비율의 영상으로 바꾸시면
-     이 숫자를 그 영상의 실제 비율(예: 16:9면 16/9)로 다시 바꿔주세요. */
-  position:relative; width:100%; aspect-ratio:32/9; border-radius:5px; overflow:hidden;
+     이 숫자를 그 영상의 실제 비율(예: 16:9면 16/9)로 다시 바꿔주세요.
+
+     화면을 더 크게 보이도록, 섹션 좌우 여백(30px)만큼 화면 끝까지 확장해서
+     갤러리/히어로 사진처럼 꽉 찬 폭으로 보이게 했습니다. */
+  position:relative; width:calc(100% + 60px); margin:0 -30px;
+  aspect-ratio:32/9; border-radius:5px; overflow:hidden;
   background:#0d0b10; box-shadow:0 18px 46px rgba(14,10,18,.4); cursor:pointer;
   border:1px solid rgba(245,242,238,.14);
 }
