@@ -287,7 +287,12 @@ td.today span{
 /* 라이트박스 */
 #lightbox{position:fixed; inset:0; z-index:90; background:rgba(15,12,18,.95); display:none; align-items:center; justify-content:center; flex-direction:column;}
 #lightbox.open{display:flex;}
-#lightbox img{max-width:92%; max-height:78%; object-fit:contain; border-radius:3px;}
+#lightbox img{
+  max-width:92%; max-height:78%; object-fit:contain; border-radius:3px;
+  touch-action:none;        /* 브라우저 기본 확대/스크롤 대신 우리가 만든 핀치줌 사용 */
+  transform-origin:center center;
+  user-select:none; -webkit-user-drag:none;
+}
 .lb-nav{position:absolute; top:0; bottom:0; width:38%; display:flex; align-items:center; cursor:pointer; z-index:2;}
 .lb-prev{left:0; justify-content:flex-start; padding-left:14px;}
 .lb-next{right:0; justify-content:flex-end; padding-right:14px;}
