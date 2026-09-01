@@ -418,6 +418,126 @@ let kakaoReady = false;
 })();
 
 /* ============================================================
+   방명록
+   기본값: 이 브라우저에만 저장되는 "로컬 방명록" (설정 없이 바로 동작).
+   config.js에 guestbook.firebase 값을 채우면, 모든 방문자가 실시간으로
+   함께 보는 "공용 방명록"으로 자동 업그레이드됩니다. (index.html 하단
+   "방명록 - 공용 방명록으로 업그레이드" 안내 참고)
+============================================================ */
+(function initGuestbook(){
+  const G = CONFIG.guestbook;
+  const section = $("#guestbook");
+  if(!G || !G.enabled){ section?.remove(); return; }
+
+  const form = $("#gbForm");
+  const nameInput = $("#gbName");
+  const msgInput = $("#gbMessage");
+  const listEl = $("#gbList");
+  const emptyEl = $("#gbEmpty");
+
+  const LS_LIST = "invite:guestbook:list";
+
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => (
+    { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]
+  ));
+  const fmtDate = (d) => {
+    const dt = d instanceof Date ? d : new Date(d);
+    if(isNaN(dt)) return "";
+    return `${dt.getMonth()+1}.${String(dt.getDate()).padStart(2,"0")}`;
+  };
+  const loadLocal = () => { try{ return JSON.parse(localStorage.getItem(LS_LIST) || "[]"); }catch(e){ return []; } };
+  const saveLocal = (list) => { try{ localStorage.setItem(LS_LIST, JSON.stringify(list)); }catch(e){} };
+
+  let backend = "local"; // "local" | "firebase"
+  let fb = null;          // window.__gbFirestore 참조 (공용 방명록으로 업그레이드되면 채워짐)
+
+  function render(items, opts){
+    const showDelete = !!(opts && opts.showDelete);
+    listEl.innerHTML = items.map(it => `
+      <div class="gb-item" data-id="${it.id}">
+        <div class="gb-item-head">
+          <span class="gb-item-name">${escapeHtml(it.name)}</span>
+          <span class="gb-item-date">${fmtDate(it.createdAt)}</span>
+        </div>
+        <div class="gb-item-msg">${escapeHtml(it.message)}</div>
+        ${showDelete ? `<button type="button" class="gb-item-del" data-id="${it.id}">삭제</button>` : ""}
+      </div>`).join("");
+    emptyEl.classList.toggle("hide", items.length > 0);
+  }
+
+  function renderLocal(){
+    const list = loadLocal().slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    // 로컬 모드에서 보이는 글은 전부 이 브라우저에서 쓴 글이므로 항상 삭제 가능
+    render(list, { showDelete:true });
+  }
+  renderLocal();
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const message = msgInput.value.trim();
+    if(!name || !message) return;
+
+    if(backend === "firebase" && fb){
+      try{
+        await fb.addDoc(fb.collection(fb.db, "guestbook"), {
+          name, message, createdAt: fb.serverTimestamp()
+        });
+        form.reset();
+        toast("메시지가 등록되었습니다");
+      }catch(err){
+        toast("등록에 실패했어요. 잠시 후 다시 시도해주세요");
+      }
+      return;
+    }
+
+    const entry = {
+      id: "l" + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      name, message, createdAt: Date.now()
+    };
+    const list = loadLocal();
+    list.push(entry);
+    saveLocal(list);
+    form.reset();
+    renderLocal();
+    toast("메시지가 등록되었습니다");
+  });
+
+  // 로컬 모드에서만 삭제 버튼이 렌더링됨 (공용 방명록에서는 신랑/신부가
+  // Firebase 콘솔에서 직접 관리 — index.html의 Firestore 규칙 안내 참고)
+  listEl.addEventListener("click", (e) => {
+    const btn = e.target.closest(".gb-item-del");
+    if(!btn || backend !== "local") return;
+    const list = loadLocal().filter(it => it.id !== btn.dataset.id);
+    saveLocal(list);
+    renderLocal();
+  });
+
+  function upgradeToFirebase(){
+    if(fb || !window.__gbFirestore) return; // 이미 업그레이드됐거나 아직 준비 안 됨
+    fb = window.__gbFirestore;
+    backend = "firebase";
+    const q = fb.query(fb.collection(fb.db, "guestbook"), fb.orderBy("createdAt", "desc"), fb.limit(200));
+    fb.onSnapshot(q, snap => {
+      const items = snap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          name: data.name,
+          message: data.message,
+          createdAt: data.createdAt && data.createdAt.toDate ? data.createdAt.toDate() : new Date()
+        };
+      });
+      render(items, { showDelete:false });
+    }, err => {
+      console.warn("방명록 실시간 동기화 실패, 로컬 저장으로 유지합니다.", err);
+    });
+  }
+  if(window.__gbFirestore) upgradeToFirebase();
+  document.addEventListener("gb:firebase-ready", upgradeToFirebase);
+})();
+
+/* ============================================================
    커튼 열기
 ============================================================ */
 (function initCurtain(){
