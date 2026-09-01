@@ -27,14 +27,14 @@ const CONFIG = {
     enabled: true,    // 눈 애니메이션 사용 여부
     density: 50       // 눈송이 개수 (많을수록 촘촘, 40~140 권장)
   },
-  
+
 // ── 배경 음악 ──
   music: {
     enabled: true,       // 음악 사용 여부
     src: "bgm.mp3",      // 1단계에서 올린 음악 파일 이름과 똑같이
     autoplay: true       // 초대장 열 때 자동 재생
   },
-  
+
   // ── 메인 (히어로) ──
   groom: {
     name: "이지원",
@@ -99,7 +99,7 @@ const CONFIG = {
   accounts: {
     groom: [
       { role: "신랑", name: "이지원", bank: "우리은행", number: "1002-648-410441" },
-      { role: "아버지", name: "이형복", bank: "시티뱅크", number: "120-73578-261" },      
+      { role: "아버지", name: "이형복", bank: "시티뱅크", number: "120-73578-261" },
       { role: "어머니", name: "조현주", bank: "국민은행", number: "060-21-0473-622" }
     ],
     bride: [
@@ -142,5 +142,24 @@ const CONFIG = {
   kakao: {
     enabled: true,
     jsKey: "" // 예: "1a2b3c4d5e6f7g8h9i0j..." (여기에 붙여넣기 전엔 빈 문자열로 두세요)
+  },
+
+  // ── 방명록 (선택 기능) ──
+  // enabled를 false로 하면 방명록 섹션 자체가 사라집니다.
+  // firebase 값을 안 채우면 방명록은 "이 브라우저에만 저장되는 로컬 방명록"으로
+  // 동작합니다 (하객마다 따로 보임). 모든 하객이 같은 글을 함께 보게 하려면
+  // index.html 하단의 "방명록 - 공용 방명록으로 업그레이드" 안내를 따라
+  // 무료 Firebase 프로젝트를 만든 뒤, 거기서 발급되는 값을 아래에 그대로
+  // 붙여넣으세요.
+  guestbook: {
+    enabled: true,
+    firebase: {
+      apiKey: "AIzaSyA4f3ovCd8A_zZbieM3607WAhVCK57CC5w",
+      authDomain: "jywedding-a785a.firebaseapp.com",
+      projectId: "jywedding-a785a",
+      storageBucket: "jywedding-a785a.firebasestorage.app",
+      messagingSenderId: "1066347313933",
+      appId: "1:1066347313933:web:555ab09ab83fb3ae288e44"
+    }
   }
 };
