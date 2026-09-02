@@ -127,7 +127,7 @@ function renderChapter({ chapterId, titleId, textId, stripId, countId, folder, t
       const cell = document.createElement("div"); cell.className = "cell";
       const img = document.createElement("img"); img.src = u; img.alt = `${altPrefix} 사진 ${idx+1}`; img.loading = "lazy";
       cell.appendChild(img);
-      cell.addEventListener("click", () => openLightbox(urls, idx));
+      // 신랑/신부 소개 사진은 눌러도 확대(라이트박스)되지 않도록 클릭 핸들러를 넣지 않았습니다.
       strip.appendChild(cell);
     });
 
@@ -290,99 +290,39 @@ $("#lbPrev").onclick = ()=> openLightbox(lbList, (lbIndex - 1 + lbList.length) %
 $("#lbNext").onclick = ()=> openLightbox(lbList, (lbIndex + 1) % lbList.length);
 
 /* ============================================================
-   라이트박스 사진 핀치 확대 / 드래그 이동 (모바일)
-   - 두 손가락으로 오므리고 펼쳐서 확대/축소
-   - 확대된 상태에서 한 손가락으로 드래그하면 화면 이동
+   라이트박스 사진 더블탭 확대 (모바일)
    - 사진을 빠르게 두 번 터치(더블탭)하면 확대 ↔ 원본 크기 토글
+   (핀치 확대/드래그 이동 기능은 제거하고 더블탭만 남겨뒀습니다)
 ============================================================ */
 (function initLightboxZoom(){
   const img = $("#lbImg");
   if(!img || !window.PointerEvent) return; // 아주 오래된 브라우저는 그냥 기존 방식으로 동작
 
-  const MIN_SCALE = 1, MAX_SCALE = 4, DOUBLE_TAP_SCALE = 2.4;
-  let scale = 1, tx = 0, ty = 0;
-  const pointers = new Map();
-  let pinchStartDist = 0, pinchStartScale = 1;
-  let dragStart = null, dragStartTX = 0, dragStartTY = 0;
+  const DOUBLE_TAP_SCALE = 2.4;
+  let scale = 1;
   let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
-
-  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
   function applyTransform(withTransition){
     img.style.transition = withTransition ? "transform .25s ease" : "none";
-    img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
-  }
-
-  function clampPan(){
-    const w = img.offsetWidth, h = img.offsetHeight;
-    const maxX = Math.max(0, (w * scale - w) / 2 + 40);
-    const maxY = Math.max(0, (h * scale - h) / 2 + 40);
-    tx = clamp(tx, -maxX, maxX);
-    ty = clamp(ty, -maxY, maxY);
+    img.style.transform = `scale(${scale})`;
   }
 
   window.__resetLightboxZoom = function(){
-    scale = 1; tx = 0; ty = 0;
-    pointers.clear();
+    scale = 1;
     applyTransform(false);
   };
 
   img.addEventListener("pointerdown", (e) => {
-    // 손가락이 이미지 밖으로 나가도 계속 추적되도록 포인터를 캡처합니다.
-    // (일부 브라우저/환경에서 실패할 수 있어 실패해도 나머지 로직은 계속 진행)
-    try{ img.setPointerCapture(e.pointerId); }catch(err){}
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    if(pointers.size === 1){
-      dragStart = { x: e.clientX, y: e.clientY };
-      dragStartTX = tx; dragStartTY = ty;
-
-      const now = Date.now();
-      const closeTap = Math.abs(e.clientX - lastTapX) < 30 && Math.abs(e.clientY - lastTapY) < 30;
-      if(now - lastTapTime < 300 && closeTap){
-        if(scale > 1){ scale = 1; tx = 0; ty = 0; }
-        else { scale = DOUBLE_TAP_SCALE; }
-        applyTransform(true);
-        lastTapTime = 0;
-      } else {
-        lastTapTime = now; lastTapX = e.clientX; lastTapY = e.clientY;
-      }
-    } else if(pointers.size === 2){
-      const pts = Array.from(pointers.values());
-      pinchStartDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-      pinchStartScale = scale;
+    const now = Date.now();
+    const closeTap = Math.abs(e.clientX - lastTapX) < 30 && Math.abs(e.clientY - lastTapY) < 30;
+    if(now - lastTapTime < 300 && closeTap){
+      scale = scale > 1 ? 1 : DOUBLE_TAP_SCALE;
+      applyTransform(true);
+      lastTapTime = 0;
+    } else {
+      lastTapTime = now; lastTapX = e.clientX; lastTapY = e.clientY;
     }
   });
-
-  img.addEventListener("pointermove", (e) => {
-    if(!pointers.has(e.pointerId)) return;
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    if(pointers.size === 2){
-      const pts = Array.from(pointers.values());
-      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-      if(pinchStartDist > 0){
-        scale = clamp(pinchStartScale * (dist / pinchStartDist), MIN_SCALE, MAX_SCALE);
-        clampPan();
-        applyTransform(false);
-      }
-    } else if(pointers.size === 1 && scale > 1 && dragStart){
-      tx = dragStartTX + (e.clientX - dragStart.x);
-      ty = dragStartTY + (e.clientY - dragStart.y);
-      clampPan();
-      applyTransform(false);
-    }
-  });
-
-  function endPointer(e){
-    pointers.delete(e.pointerId);
-    if(pointers.size === 0){
-      dragStart = null;
-      if(scale < 1.02){ scale = 1; tx = 0; ty = 0; applyTransform(true); }
-    }
-  }
-  img.addEventListener("pointerup", endPointer);
-  img.addEventListener("pointercancel", endPointer);
 })();
 
 // 오시는 길
