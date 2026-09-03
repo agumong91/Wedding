@@ -118,7 +118,7 @@ const CONFIG = {
   video: {
     title: "우리의 찬란한 한 페이지가\n될 수 있게",
     caption: "직접 부른 노랫말에 진심을 담았습니다.\n가볍게 재생해 보시고,\n본식에서 함께 즐겨주세요.",
-    youtube: "https://youtu.be/nKbdGTWYtd0?si=37KCEjqQDWDjX7yj"
+    youtube: "https://youtu.be/W9FLJ1f-49U"
   },
 
   // ── 링크 공유 시 나타나는 문구 ──
