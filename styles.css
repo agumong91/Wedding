@@ -106,6 +106,11 @@ section{padding:64px 30px; position:relative;}
   transition:background .3s, color .3s;
 }
 .curtain-btn:hover{background:var(--gold); color:#241c22;}
+.curtain-hint{
+  margin-top:20px; color:var(--muted); font-size:12px;
+  letter-spacing:.03em; opacity:.75; display:none; /* 배경음악이 켜져 있을 때만 script.js에서 보여줍니다 */
+}
+.curtain-hint.show{display:block;}
 
 /* ── 히어로 ── */
 .hero{padding:0; text-align:center;}
@@ -459,4 +464,3 @@ td.today span{
 @media (prefers-reduced-motion: reduce){
   .reveal{opacity:1; transform:none; transition:none;}
 }
-
