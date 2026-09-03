@@ -688,6 +688,7 @@ let kakaoReady = false;
     if(openBtn && CONFIG.useCurtain){
       // "초대장 열기" 클릭 = 사용자 동작 → 이때 재생하면 자동재생 차단을 피할 수 있음
       openBtn.addEventListener("click", play);
+      $("#curtainHint")?.classList.add("show"); // 자동재생 음악이 있을 때만 볼륨 안내 문구 표시
     } else {
       // 커튼 미사용 시: 화면을 처음 누를 때 시작
       const startOnce = ()=>{ play(); document.removeEventListener("click", startOnce); document.removeEventListener("touchstart", startOnce); };
