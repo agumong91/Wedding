@@ -393,10 +393,16 @@ document.addEventListener("click", e => {
   $("#videoThumb").src = `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
   $("#videoFrame").addEventListener("click", function once(){
     document.dispatchEvent(new Event("bgm:pause"));   // 영상 재생 시 배경음악 정지
-    this.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0"
+    // sandbox 속성으로 팝업/최상위 페이지 이동 권한을 일부러 빼뒀습니다.
+    // (iOS에서 영상 재생 중이나 재생이 끝난 뒤 유튜브 자체 UI의 링크를
+    //  누르면 유튜브 앱으로 튕겨나가는 문제가 있었는데, 이 iOS의
+    //  Universal Links 기능이 iframe 안에서는 sandbox로 팝업/이동 권한이
+    //  없을 때 작동하지 않는다는 점을 이용해 막았습니다)
+    this.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&playsinline=1&modestbranding=1"
       title="wedding video"
       referrerpolicy="strict-origin-when-cross-origin"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      sandbox="allow-scripts allow-same-origin allow-presentation"
       allowfullscreen></iframe>`;
     this.style.cursor = "default";
   }, { once:true });
